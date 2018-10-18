@@ -1,4 +1,4 @@
-#include <GPIOlib.h>
+#include "GPIOlib.h"
 #include <cmath>
 #include <stdio.h>
 
@@ -112,7 +112,7 @@ void adjustAngle(double distance) {
 // 修改那个常量以修改本方法的延迟。
 void getSpeed(double& left, double& right) {
     // stop 1000ms, read the cycles left and right wheels have taken inside the 1000ms.
-    delay(SPEED_SAMPLING_MS);
+    delay(SPEED_SAMPLING_DELAY_MS);
     int cyclesLeft = 0, cyclesRight = 0;
     getCounter(&cyclesLeft,&cyclesRight);
     resetCounter();
