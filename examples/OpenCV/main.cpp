@@ -30,7 +30,7 @@ void drawLine(Mat &picture, Point startPoint, Point endPoint);
 
 double calculateDistance(Point point1, Point point2);
 
-float angle(float x1, float y1, float x2, float y2);
+double angle(double x1, double y1, double x2, double y2);
 
 void resizeImage(Mat frame);
 
@@ -120,9 +120,9 @@ void analysePicture(Mat imag) {
     double joinX = (leftMaxLengthLine.b - rightMaxLengthLine.b) / (rightMaxLengthLine.k - leftMaxLengthLine.k);
     double joinY = leftMaxLengthLine.k * joinX + leftMaxLengthLine.b;
     
-    cout << angle(joinX, joinY, result.cols / 2, result.rows) << endl;
+    double deltaAngle = angle(joinX, joinY, result.cols / 2, result.rows);
     
-    //    adjust(distance);
+    adjust(deltaAngle);
     
     //画线
     /*
@@ -155,24 +155,17 @@ void analysePicture(Mat imag) {
     //    imwrite("result.jpg", imag);
 }
 
-float angle(float x1, float y1, float x2, float y2) {
-    float angle_temp;
-    float xx, yy;
+double angle(double x1, double y1, double x2, double y2) {
+    double angle_temp;
+    double xx, yy;
     xx = x2 - x1;
     yy = y2 - y1;
     if (xx == 0.0)
         angle_temp = PI / 2.0;
     else
-        angle_temp = atan(fabs(yy / xx));
+        angle_temp = atan(yy / xx);
     
-    if ((xx < 0.0) && (yy >= 0.0))
-        angle_temp = PI - angle_temp;
-    else if ((xx < 0.0) && (yy < 0.0))
-        angle_temp = PI + angle_temp;
-    else if ((xx >= 0.0) && (yy < 0.0))
-        angle_temp = PI * 2.0 - angle_temp;
-    
-    return (angle_temp);
+    return angle_temp;
 }
 
 void resizeImage(Mat frame) {
