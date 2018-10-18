@@ -5,8 +5,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
-#include <math.h>
-#include "control.cpp"
+#include <cmath>
+//#include "control.cpp"
 
 #define PI 3.1415926
 
@@ -30,8 +30,11 @@ void drawLine(Mat &picture, Point startPoint, Point endPoint);
 
 double calculateDistance(Point point1, Point point2);
 
-const string CAM_PATH = "/dev/video0";
-//const string CAM_PATH = "/devideo0";
+float angle(float x1, float y1, float x2, float y2);
+
+void resizeImage(Mat frame);
+
+const string CAM_PATH = "video0.avi";
 const string MAIN_WINDOW_NAME = "Processed Image";
 const string CANNY_WINDOW_NAME = "Canny";
 
@@ -45,7 +48,7 @@ public:
     double length;
     double k;
     double b;
-
+    
     Line(double length, double k, double b) : length(length), k(k), b(b) {}
 };
 
@@ -55,31 +58,26 @@ public:
 //    return 0;
 //}
 
-double analysePicture(Mat imag) {
-
-    //Rect rect(0, imag.rows / 2, imag.cols, imag.rows);
-    // Mat element = getStructuringElement(MORPH_RECT, Size(2 * erosion_size + 1, 2 * erosion_size + 1),s / 2 - 72);
-    //Mat raw = imag(rect);
-//    Mat element = getStructuringElement(MORPH_RECT, Size(2 * erosion_size + 1, 2 * erosion_size + 1),
-//                                        Point(erosion_size, erosion_size));
-//
-//    //腐蚀操作
-//    result = imag.clone();
-//    erode(result, result, element);
-//    dilate(result, result, element);
-    Mat result=imag.clone();
-    cout << "Analyzing picture" << endl;
-    Canny(imag, result, 50, 250, 3);
-
-   
-
+void analysePicture(Mat imag) {
+    //    Rect rect(0, imag.rows / 2, imag.cols, imag.rows / 2 - 72);
+    //    Mat result = imag(rect);
+    //    Mat element = getStructuringElement(MORPH_RECT, Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+    //                                        Point(erosion_size, erosion_size));
+    //
+    //    //腐蚀操作
+    //    result = imag.clone();
+    //    erode(result, result, element);
+    //    dilate(result, result, element);
+    resizeImage(imag);
+    imag = imread("image.jpg", 0);
+    Mat result = imag.clone();
+    Canny(result, result, 100, 150, 3);
     std::vector<Vec4i> lines;
     std::vector<Line> leftLineTuples;
     std::vector<Line> rightLineTuples;
-
-    cout << "Analyzing picture1" << endl;
+    
     cv::HoughLinesP(result, lines, 1, CV_PI / 180, 70, 30, 10);
-
+    
     for (int i = 0; i < lines.size(); i++) {
         double delta_x = lines[i][2] - lines[i][0];
         double delta_y = lines[i][3] - lines[i][1];
@@ -94,7 +92,11 @@ double analysePicture(Mat imag) {
             leftLineTuples.push_back(Line(length, k, b));
         }
     }
-
+    
+    if (rightLineTuples.size() <= 0 || leftLineTuples.size() <= 0) {
+        return;
+    }
+    
     int maxRightLengthIndex = 0;
     double maxLength = 0;
     for (int i = 0; i < rightLineTuples.size(); i++) {
@@ -103,7 +105,7 @@ double analysePicture(Mat imag) {
             maxRightLengthIndex = i;
         }
     }
-
+    
     int maxLeftLengthIndex = 0;
     maxLength = 0;
     for (int i = 0; i < leftLineTuples.size(); i++) {
@@ -112,45 +114,73 @@ double analysePicture(Mat imag) {
             maxLeftLengthIndex = i;
         }
     }
-	cout << "Analyzing picture2" << endl;
+    
     Line rightMaxLengthLine = rightLineTuples[maxRightLengthIndex];
     Line leftMaxLengthLine = leftLineTuples[maxLeftLengthIndex];
     double joinX = (leftMaxLengthLine.b - rightMaxLengthLine.b) / (rightMaxLengthLine.k - leftMaxLengthLine.k);
     double joinY = leftMaxLengthLine.k * joinX + leftMaxLengthLine.b;
-//    double baseEndX = leftMaxLengthLine.b;
-//    double baseX = -leftMaxLengthLine.b / leftMaxLengthLine.k;
-    double centerX = result.cols / 2;
-    double distance = joinY - centerX;
-    cout << distance << endl;
-    adjust(distance);
+    
+    cout << angle(joinX, joinY, result.cols / 2, result.rows) << endl;
+    
+    //    adjust(distance);
+    
+    //画线
+    /*
+     double rightLineX = -rightMaxLengthLine.b / rightMaxLengthLine.k;
+     double rightLineY = rightMaxLengthLine.k * imag.cols + rightMaxLengthLine.b;
+     Point rightEndPoint = Point(static_cast<int>(rightLineX), 0);
+     Point rightStartPoint = Point(imag.cols, static_cast<int>(rightLineY));
+     
+     double leftLineX = -leftMaxLengthLine.b / leftMaxLengthLine.k;
+     double leftLineY = leftMaxLengthLine.b;
+     Point leftEndPoint = Point(static_cast<int>(leftLineX), 0);
+     Point leftStartPoint = Point(0, static_cast<int>(leftLineY));
+     
+     drawLine(result, leftStartPoint, leftEndPoint);
+     drawLine(result, rightStartPoint, rightEndPoint);*/
+    
+    //    vector<Point2f> corners(4);
+    //    corners[0] = leftStartPoint;
+    //    corners[1] = rightStartPoint;
+    //    corners[2] = leftEndPoint;
+    //    corners[3] = rightEndPoint;
+    //    vector<Point2f> corners_trans(4);
+    //    corners_trans[0] = leftStartPoint;
+    //    corners_trans[1] = rightStartPoint;
+    //    corners_trans[2] = Point2f(leftStartPoint.x, 10);
+    //    corners_trans[3] = Point2f(rightStartPoint.x, 10);
+    //    Mat transform = getPerspectiveTransform(corners, corners_trans);
+    
+    //    warpPerspective(imag, result, transform, cv::Size(imag.cols + 100, imag.rows), cv::INTER_LINEAR);
+    //    imwrite("result.jpg", imag);
+}
 
-//    double rightLineX = -rightMaxLengthLine.b / rightMaxLengthLine.k;
-//    double rightLineY = rightMaxLengthLine.k * imag.cols + rightMaxLengthLine.b;
-//    Point rightEndPoint = Point(static_cast<int>(rightLineX), 0);
-//    Point rightStartPoint = Point(imag.cols, static_cast<int>(rightLineY));
-//
-//    double leftLineX = -leftMaxLengthLine.b / leftMaxLengthLine.k;
-//    double leftLineY = leftMaxLengthLine.b;
-//    Point leftEndPoint = Point(static_cast<int>(leftLineX), 0);
-//    Point leftStartPoint = Point(0, static_cast<int>(leftLineY));
+float angle(float x1, float y1, float x2, float y2) {
+    float angle_temp;
+    float xx, yy;
+    xx = x2 - x1;
+    yy = y2 - y1;
+    if (xx == 0.0)
+        angle_temp = PI / 2.0;
+    else
+        angle_temp = atan(fabs(yy / xx));
+    
+    if ((xx < 0.0) && (yy >= 0.0))
+        angle_temp = PI - angle_temp;
+    else if ((xx < 0.0) && (yy < 0.0))
+        angle_temp = PI + angle_temp;
+    else if ((xx >= 0.0) && (yy < 0.0))
+        angle_temp = PI * 2.0 - angle_temp;
+    
+    return (angle_temp);
+}
 
-//    drawLine(imag, leftStartPoint, leftEndPoint);
-//    drawLine(imag, rightStartPoint, rightEndPoint);
-
-//    vector<Point2f> corners(4);
-//    corners[0] = leftStartPoint;
-//    corners[1] = rightStartPoint;
-//    corners[2] = leftEndPoint;
-//    corners[3] = rightEndPoint;
-//    vector<Point2f> corners_trans(4);
-//    corners_trans[0] = leftStartPoint;
-//    corners_trans[1] = rightStartPoint;
-//    corners_trans[2] = Point2f(leftStartPoint.x, 10);
-//    corners_trans[3] = Point2f(rightStartPoint.x, 10);
-//    Mat transform = getPerspectiveTransform(corners, corners_trans);
-
-//    warpPerspective(imag, result, transform, cv::Size(imag.cols + 100, imag.rows), cv::INTER_LINEAR);
-//    imwrite("result.jpg", imag);
+void resizeImage(Mat frame) {
+    Rect rect(0, frame.rows / 2, frame.cols, frame.rows / 2 - 72);
+    Mat image_roi = frame(rect);
+    Mat mask = image_roi.clone();
+    // 将帧转成图片输出
+    imwrite("image.jpg", image_roi);
 }
 
 void getOneShot() {
@@ -173,7 +203,7 @@ void record() {
     if (!capture.isOpened()) {
         capture.open(atoi(CAM_PATH.c_str()));
     }
-
+    
     int dWidth = static_cast<int>(capture.get(CAP_PROP_FRAME_WIDTH)); //the width of frames of the video
     int dHeight = static_cast<int>(capture.get(CAP_PROP_FRAME_HEIGHT));
     Size S(dWidth, dHeight);
@@ -182,7 +212,7 @@ void record() {
     capture.get(CV_CAP_DROP_FPS);
     string outFile = "./video.avi";
     write.open(outFile, VideoWriter::fourcc('M', 'J', 'P', 'G'), CV_CAP_DROP_FPS, S, true);
-
+    
     bool stop = false;
     Mat frame;
     while (!stop) {
@@ -223,21 +253,16 @@ using namespace cv;
 using namespace std;
 
 int main() {
-    VideoCapture capture(CAM_PATH);
+    VideoCapture capture(0);
     //If this fails, try to open as a video camera, through the use of an integer param
     if (!capture.isOpened()) {
-        capture.open(atoi(CAM_PATH.c_str()));
+        capture.open(0);
     }
-
-    double dWidth = capture.get(CV_CAP_PROP_FRAME_WIDTH);            //the width of frames of the video
-    double dHeight = capture.get(CV_CAP_PROP_FRAME_HEIGHT);        //the height of frames of the video
-    clog << "Frame Size: " << dWidth << "x" << dHeight << endl;
-
+    
+    double dWidth = capture.get(CAP_PROP_FRAME_WIDTH);            //the width of frames of the video
+    double dHeight = capture.get(CAP_PROP_FRAME_HEIGHT);        //the height of frames of the video
+    
     Mat image;
-
-    // init wheel
-    startWheels();
-
     while (true) {
         capture >> image;
         if (image.empty())
