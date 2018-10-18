@@ -31,6 +31,7 @@ void drawLine(Mat &picture, Point startPoint, Point endPoint);
 double calculateDistance(Point point1, Point point2);
 
 const string CAM_PATH = "/dev/video0";
+//const string CAM_PATH = "/devideo0";
 const string MAIN_WINDOW_NAME = "Processed Image";
 const string CANNY_WINDOW_NAME = "Canny";
 
@@ -55,8 +56,10 @@ public:
 //}
 
 double analysePicture(Mat imag) {
-    Rect rect(0, imag.rows / 2, imag.cols, imag.rows / 2 - 72);
-    Mat result = imag(rect);
+
+    //Rect rect(0, imag.rows / 2, imag.cols, imag.rows);
+    // Mat element = getStructuringElement(MORPH_RECT, Size(2 * erosion_size + 1, 2 * erosion_size + 1),s / 2 - 72);
+    //Mat raw = imag(rect);
 //    Mat element = getStructuringElement(MORPH_RECT, Size(2 * erosion_size + 1, 2 * erosion_size + 1),
 //                                        Point(erosion_size, erosion_size));
 //
@@ -64,11 +67,17 @@ double analysePicture(Mat imag) {
 //    result = imag.clone();
 //    erode(result, result, element);
 //    dilate(result, result, element);
-    Canny(result, result, 100, 150, 3);
+    Mat result=imag.clone();
+    cout << "Analyzing picture" << endl;
+    Canny(imag, result, 50, 250, 3);
+
+   
+
     std::vector<Vec4i> lines;
     std::vector<Line> leftLineTuples;
     std::vector<Line> rightLineTuples;
 
+    cout << "Analyzing picture1" << endl;
     cv::HoughLinesP(result, lines, 1, CV_PI / 180, 70, 30, 10);
 
     for (int i = 0; i < lines.size(); i++) {
@@ -103,7 +112,7 @@ double analysePicture(Mat imag) {
             maxLeftLengthIndex = i;
         }
     }
-
+	cout << "Analyzing picture2" << endl;
     Line rightMaxLengthLine = rightLineTuples[maxRightLengthIndex];
     Line leftMaxLengthLine = leftLineTuples[maxLeftLengthIndex];
     double joinX = (leftMaxLengthLine.b - rightMaxLengthLine.b) / (rightMaxLengthLine.k - leftMaxLengthLine.k);
@@ -225,6 +234,10 @@ int main() {
     clog << "Frame Size: " << dWidth << "x" << dHeight << endl;
 
     Mat image;
+
+    // init wheel
+    startWheels();
+
     while (true) {
         capture >> image;
         if (image.empty())
