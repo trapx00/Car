@@ -61,7 +61,6 @@ const double MAX_TURN = 45;
 // PID速度预期速度。单位：cm/s
 const double EXPECTED_SPEED = 5;
 const double MAX_SPEED = 10;
-const double MIN_SPEED =-10;
 
 // 速度采样延时。可以设置为0。单位：毫秒
 const double SPEED_SAMPLING_DELAY_MS = 0;
@@ -71,8 +70,8 @@ const double ESTIMATED_OPENCV_MS = 100;
 const double PID_DT = SPEED_SAMPLING_DELAY_MS + ESTIMATED_OPENCV_MS;
 
 // PID对象。后三个参数为调参的对象，分别为P, I, D
-PID pidLeftSpeed(PID_DT, MAX_SPEED, MIN_SPEED, 1000, 0.6, 0);
-PID pidRightSpeed(PID_DT, MAX_SPEED, MIN_SPEED, 1000, 0.6, 0);
+PID pidLeftSpeed(PID_DT, MAX_SPEED, -MAX_SPEED, 1000, 0.6, 0);
+PID pidRightSpeed(PID_DT, MAX_SPEED, -MAX_SPEED, 1000, 0.6, 0);
 PID pidAngle(PID_DT,MAX_TURN, -MAX_TURN, 100, 0.6, 0);
 
 void adjustSpeed(double expectedSpeed, double leftSpeed, double rightSpeed) {
@@ -80,31 +79,40 @@ void adjustSpeed(double expectedSpeed, double leftSpeed, double rightSpeed) {
     double leftResult = pidLeftSpeed.calculate(expectedSpeed, leftSpeed);
 
 #ifdef PRINT
-    printf("Left Wheel Speed: Current %.2lf, PID: %.2lf", leftSpeed, leftResult);
+    printf("Left Wheel: Current %.2lf, PID: %.2lf\n", leftSpeed, leftResult);
 #endif
     controlLeft(leftResult>0, abs(leftResult));
 
     // adjust right wheel
     double rightResult = pidRightSpeed.calculate(expectedSpeed, rightSpeed);
 #ifdef PRINT
-    printf("Right Wheel Speed: Current %.2lf, PID: %.2lf", rightSpeed, rightResult);
+    printf("Right Wheel: Current %.2lf, PID: %.2lf\n", rightSpeed, rightResult);
 #endif
     controlRight(rightResult>0, abs(rightResult));
 }
 
-void adjustAngle(double distance) {
-    // adjust the angle
-    double result = pidAngle.calculate(0, distance);
+void adjustAngle(double angle) {
+    if (angle > MAX_TURN) {
+        angle = MAX_TURN;
+    } else if (angle < -MAX_TURN) {
+        angle = -MAX_TURN;
+    }
+    turnTo(angle);
+//     // adjust the angle
+//     double result = pidAngle.calculate(0, angle);
 
-
+// #ifdef PRINT
+//     printf("Angle: Current %.2lf, PID Result: %.2lf\n", angle, result);
+// #endif
+//     turnTo(result);
     // calculate the angle based on result
     // proportion should be enough？
-    double angle = result / MAX_DISTANCE_TO_PATH * MAX_TURN;
+//     double angle = result / MAX_DISTANCE_TO_PATH * MAX_TURN;
 
-#ifdef PRINT
-    printf("Angle: Current distance %.2lf, PID Result: %.2lf. Angle result: %.2lf", distance, result, angle);
-#endif
-    turnTo(angle);
+// #ifdef PRINT
+//     printf("Angle: Current distance %.2lf, PID Result: %.2lf. Angle result: %.2lf", distance, result, angle);
+// #endif
+//     turnTo(angle);
 }
 
 // 以上代码不用看，看以下的。
@@ -127,15 +135,15 @@ void getSpeed(double& left, double& right) {
 // 主方法
 // 这个方法会根据传入的距离调整小车的速度和角度
 // 会自动获取上次执行此方法之后这一段时间内的平均速度。
-// @param double distance: 目前的地点和规划的路线的距离。在左边为负，在右边为正。
-void adjust(double distance) {
+// @param double distance: 目前视线中点到边线延长线交点的角度。左为负，右为正。
+void adjust(double angle) {
 #ifdef PRINT
-    printf("Adjustment started. Distance: %.2lf\n", distance);
+    printf("Adjustment started. Distance: %.2lf\n", angle);
 #endif
     double leftSpeed = 0, rightSpeed = 0;
     getSpeed(leftSpeed, rightSpeed);
     adjustSpeed(EXPECTED_SPEED, leftSpeed, rightSpeed);
-    adjustAngle(distance);
+    adjustAngle(angle);
 }
 
 void startWheels() {
