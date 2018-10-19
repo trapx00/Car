@@ -92,6 +92,9 @@ void adjustSpeed(double expectedSpeed, double leftSpeed, double rightSpeed) {
 }
 
 void adjustAngle(double angle) {
+    #ifdef PRINT
+    printf("Adjust angle to %.2lf\n", angle);
+    #endif
     if (angle > MAX_TURN) {
         angle = MAX_TURN;
     } else if (angle < -MAX_TURN) {
@@ -129,16 +132,19 @@ void getSpeed(double& left, double& right) {
     // calculate the speed
     left=cyclesLeft*63.4*M_PI/390;
     right=cyclesRight*63.4*M_PI/390;
+    #ifdef PRINT
+    printf("Current speed: left: %.2lf, right: %.2lf\n", left, right);
+    #endif
 }
 
 
 // 主方法
 // 这个方法会根据传入的距离调整小车的速度和角度
 // 会自动获取上次执行此方法之后这一段时间内的平均速度。
-// @param double distance: 目前视线中点到边线延长线交点的角度。左为负，右为正。
+// @param double angle: 目前视线中点到边线延长线交点的角度。左为负，右为正。
 void adjust(double angle) {
 #ifdef PRINT
-    printf("Adjustment started. Distance: %.2lf\n", angle);
+    printf("Adjustment started. Angle: %.2lf\n", angle);
 #endif
     double leftSpeed = 0, rightSpeed = 0;
     getSpeed(leftSpeed, rightSpeed);
@@ -155,3 +161,10 @@ void startWheels() {
 #endif
 }
 
+void stopWheels() {
+    stopLeft();
+    stopRight();
+    #ifdef PRINT
+    printf("Wheel stopped.\n");
+#endif
+}

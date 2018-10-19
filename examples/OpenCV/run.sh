@@ -1,3 +1,3 @@
-cmake -DCMAKE_CXX_FLAGS="-std=c++11" .
-make
-./demo
+./compile.sh
+chmod +x ./test
+sudo ./test
