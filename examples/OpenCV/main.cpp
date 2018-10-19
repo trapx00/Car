@@ -40,7 +40,7 @@ int main() {
         #endif
 
         double angle = 0;
-        analysePicture(image), angle);
+        analysePicture(image, angle);
         adjust(angle);
     }
 
