@@ -29,12 +29,13 @@ void drawLine(Mat &picture, Point startPoint, Point endPoint);
 
 double calculateDistance(Point point1, Point point2);
 
-double angle(double x1, double y1, double x2, double y2);
+double calcAngle(double x1, double y1, double x2, double y2);
 
 void resizeImage(Mat frame);
 
 const string MAIN_WINDOW_NAME = "Processed Image";
 const string CANNY_WINDOW_NAME = "Canny";
+const string CAM_PATH = "/dev/video0";
 
 const int CANNY_LOWER_BOUND = 50;
 const int CANNY_UPPER_BOUND = 250;
@@ -113,7 +114,7 @@ void analysePicture(Mat imag, double& angle) {
     double joinX = (leftMaxLengthLine.b - rightMaxLengthLine.b) / (rightMaxLengthLine.k - leftMaxLengthLine.k);
     double joinY = leftMaxLengthLine.k * joinX + leftMaxLengthLine.b;
     
-    double deltaAngle = angle(joinX, joinY, result.cols / 2, result.rows);
+    double deltaAngle = calcAngle(joinX, joinY, result.cols / 2, result.rows);
     
     // returns values
     angle = deltaAngle;
@@ -149,7 +150,7 @@ void analysePicture(Mat imag, double& angle) {
     //    imwrite("result.jpg", imag);
 }
 
-double angle(double x1, double y1, double x2, double y2) {
+double calcAngle(double x1, double y1, double x2, double y2) {
     double angle_temp;
     double xx, yy;
     xx = x2 - x1;

@@ -42,6 +42,10 @@ int main() {
         double angle = 0;
         analysePicture(image, angle);
         adjust(angle);
+
+        if (waitKey(1) == 27) {
+            break;
+        }
     }
 
     stopWheels();
