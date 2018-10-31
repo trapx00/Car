@@ -94,7 +94,20 @@ void adjustSpeed(double expectedSpeed, double leftSpeed, double rightSpeed) {
 }
 
 void adjustAngle(double angle) {
-    #ifdef PRINT
+
+    angle *= 57.2;
+
+    double absAngle = abs(angle);
+
+    double turn = 90-absAngle;
+
+    if (turn>45) turn = 45;
+
+    double result = (angle>0 ? -1:1) * turn;
+
+    
+
+#ifdef PRINT
     printf("Adjust angle to %.2lf\n", angle);
     #endif
     if (angle > MAX_TURN) {
@@ -102,7 +115,7 @@ void adjustAngle(double angle) {
     } else if (angle < -MAX_TURN) {
         angle = -MAX_TURN;
     }
-    turnTo(angle);
+    turnTo(result);
 //     // adjust the angle
 //     double result = pidAngle.calculate(0, angle);
 

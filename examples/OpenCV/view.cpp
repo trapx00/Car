@@ -134,7 +134,7 @@ void analysePicture(Mat imag, double& angle) {
      drawLine(result, leftStartPoint, leftEndPoint);
      drawLine(result, rightStartPoint, rightEndPoint);
     
-    imshow("Main Window", image);
+    imshow("Main Window", result);
     waitKey(1);
     #endif
     
