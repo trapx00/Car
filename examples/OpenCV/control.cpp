@@ -59,8 +59,8 @@ const double MAX_DISTANCE_TO_PATH = 50;
 const double MAX_TURN = 45;
 
 // PID速度预期速度。单位：cm/s
-const double EXPECTED_SPEED = 5;
-const double MAX_SPEED = 10;
+const double EXPECTED_SPEED = 20;
+const double MAX_SPEED = 30;
 
 // 速度采样延时。可以设置为0。单位：毫秒
 const double SPEED_SAMPLING_DELAY_MS = 0;
@@ -75,20 +75,22 @@ PID pidRightSpeed(PID_DT, MAX_SPEED, -MAX_SPEED, 1000, 0.6, 0);
 PID pidAngle(PID_DT,MAX_TURN, -MAX_TURN, 100, 0.6, 0);
 
 void adjustSpeed(double expectedSpeed, double leftSpeed, double rightSpeed) {
-    // adjust left wheel
-    double leftResult = pidLeftSpeed.calculate(expectedSpeed, leftSpeed);
+    controlLeft(FORWARD, EXPECTED_SPEED);
+    controlRight(FORWARD, EXPECTED_SPEED);
+//     // adjust left wheel
+//     double leftResult = pidLeftSpeed.calculate(expectedSpeed, leftSpeed);
 
-#ifdef PRINT
-    printf("Left Wheel: Current %.2lf, PID: %.2lf\n", leftSpeed, leftResult);
-#endif
-    controlLeft(leftResult>0, abs(leftResult));
+// #ifdef PRINT
+//     printf("Left Wheel: Current %.2lf, PID: %.2lf\n", leftSpeed, leftResult);
+// #endif
+//     controlLeft(leftResult>0, abs(leftResult));
 
-    // adjust right wheel
-    double rightResult = pidRightSpeed.calculate(expectedSpeed, rightSpeed);
-#ifdef PRINT
-    printf("Right Wheel: Current %.2lf, PID: %.2lf\n", rightSpeed, rightResult);
-#endif
-    controlRight(rightResult>0, abs(rightResult));
+//     // adjust right wheel
+//     double rightResult = pidRightSpeed.calculate(expectedSpeed, rightSpeed);
+// #ifdef PRINT
+//     printf("Right Wheel: Current %.2lf, PID: %.2lf\n", rightSpeed, rightResult);
+// #endif
+//     controlRight(rightResult>0, abs(rightResult));
 }
 
 void adjustAngle(double angle) {
