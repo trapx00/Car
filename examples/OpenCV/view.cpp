@@ -119,8 +119,8 @@ void analysePicture(Mat imag, double& angle) {
     // returns values
     angle = deltaAngle;
     
+    #ifdef _DEBUG
     //画线
-    /*
      double rightLineX = -rightMaxLengthLine.b / rightMaxLengthLine.k;
      double rightLineY = rightMaxLengthLine.k * imag.cols + rightMaxLengthLine.b;
      Point rightEndPoint = Point(static_cast<int>(rightLineX), 0);
@@ -132,7 +132,11 @@ void analysePicture(Mat imag, double& angle) {
      Point leftStartPoint = Point(0, static_cast<int>(leftLineY));
      
      drawLine(result, leftStartPoint, leftEndPoint);
-     drawLine(result, rightStartPoint, rightEndPoint);*/
+     drawLine(result, rightStartPoint, rightEndPoint);
+    
+    imshow("Main Window", image);
+    waitKey(1);
+    #endif
     
     //    vector<Point2f> corners(4);
     //    corners[0] = leftStartPoint;

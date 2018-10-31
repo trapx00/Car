@@ -34,11 +34,6 @@ int main() {
         if (image.empty())
             break;
 
-        #ifdef _DEBUG
-        imshow("Main Window", image);
-        waitKey(1);
-        #endif
-
         double angle = 0;
         analysePicture(image, angle);
         adjust(angle);
