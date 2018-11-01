@@ -95,6 +95,10 @@ void adjustSpeed(double expectedSpeed, double leftSpeed, double rightSpeed) {
 
 void adjustAngle(double angle) {
 
+    if (angle == 0) {
+        return;
+    }
+
     angle *= 57.2;
 
     double absAngle = abs(angle);
