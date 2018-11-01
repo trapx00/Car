@@ -94,10 +94,10 @@ void analysePicture(Mat imag, double& angle) {
 #endif
         return;
     }else if(rightLineTuples.size()>=0&& leftLineTuples.size() <= 0){
-        angle=-1;
+        angle=1;
         return;
     }else if(rightLineTuples.size() <= 0 && leftLineTuples.size() >= 0){
-        angle=1;
+        angle=-1;
         return;
     }
     

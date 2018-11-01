@@ -56,11 +56,11 @@ private:
 // Angles
 // 最大可能的目前地点和规划路径的距离。用来根据距离偏差算转向量。用赛道宽度就可以。单位和distacen保持一致即可，为cm。
 const double MAX_DISTANCE_TO_PATH = 50;
-const double MAX_TURN = 45;
+const double MAX_TURN = 30;
 
 // PID速度预期速度。单位：cm/s
-const double EXPECTED_SPEED = 7;
-const double MAX_SPEED = 30;
+const double EXPECTED_SPEED = 10;
+const double MAX_SPEED = 10;
 
 // 速度采样延时。可以设置为0。单位：毫秒
 const double SPEED_SAMPLING_DELAY_MS = 0;
@@ -75,8 +75,8 @@ PID pidRightSpeed(PID_DT, MAX_SPEED, -MAX_SPEED, 1000, 0.6, 0);
 PID pidAngle(PID_DT,MAX_TURN, -MAX_TURN, 100, 0.6, 0);
 
 void adjustSpeed(double expectedSpeed, double leftSpeed, double rightSpeed) {
-    controlLeft(FORWARD, EXPECTED_SPEED);
-    controlRight(FORWARD, EXPECTED_SPEED);
+    controlLeft(FORWARD, expectedSpeed);
+    controlRight(FORWARD, expectedSpeed);
 //     // adjust left wheel
 //     double leftResult = pidLeftSpeed.calculate(expectedSpeed, leftSpeed);
 
@@ -105,8 +105,8 @@ void adjustAngle(double angle) {
 
     double turn = 90-absAngle;
 
-    if (turn>30) turn = 30;
-
+    if (turn>MAX_TURN) turn = MAX_TURN; 
+    
     double result = (angle>0 ? -1:1) * turn;
 
     
@@ -167,7 +167,7 @@ void adjust(double angle) {
 #endif
     double leftSpeed = 0, rightSpeed = 0;
     getSpeed(leftSpeed, rightSpeed);
-    adjustSpeed(EXPECTED_SPEED, leftSpeed, rightSpeed);
+	    adjustSpeed(EXPECTED_SPEED, leftSpeed, rightSpeed);
     adjustAngle(angle);
 }
 
