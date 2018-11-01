@@ -19,6 +19,7 @@ using namespace std;
 //int erosion_size = 0;
 //int dilation_elem = 0;
 //int dilation_size = 0;
+
 //int const max_elem = 5;
 //int const max_kernel_size = 21;
 //
@@ -79,20 +80,24 @@ void analysePicture(Mat imag, double& angle) {
         double k = delta_y / delta_x;
         double b = lines[i][1] - k * lines[i][0];
         if (k > 0) {
-            cout << lines[i] << endl;
-            cout << length << endl;
             rightLineTuples.push_back(Line(length, k, b));
         } else if (k < 0) {
             leftLineTuples.push_back(Line(length, k, b));
         }
     }
     
-    if (rightLineTuples.size() <= 0 || leftLineTuples.size() <= 0) {
+    if (rightLineTuples.size() <= 0 && leftLineTuples.size() <= 0) {
 #ifdef _DEBUG
             imshow("Main Window", imag);
 
             waitKey(1);
 #endif
+        return;
+    }else if(rightLineTuples.size()>=0&& leftLineTuples.size() <= 0){
+        angle=-1;
+        return;
+    }else if(rightLineTuples.size() <= 0 && leftLineTuples.size() >= 0){
+        angle=1;
         return;
     }
     
