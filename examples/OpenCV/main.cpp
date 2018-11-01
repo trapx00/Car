@@ -6,6 +6,9 @@
 #include <opencv2/opencv.hpp>
 #include "view.cpp"
 #include "control.cpp"
+#include "GPIOlib.h"
+
+using namespace GPIO;
 
 #define PI 3.1415926
 
@@ -28,6 +31,8 @@ int main() {
 
     startWheels();
 
+    turnTo(0);
+
     Mat image;
     while (true) {
         capture >> image;
@@ -38,7 +43,7 @@ int main() {
         analysePicture(image, angle);
         adjust(angle);
 
-        if (waitKey(1) == 27) {
+        if (waitKey(500) == 27) {
             break;
         }
     }
