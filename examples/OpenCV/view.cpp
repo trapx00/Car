@@ -10,7 +10,7 @@
 #define PI 3.1415926
 
 //Uncomment this line at run-time to skip GUI rendering
-#define _DEBUG
+//#define _DEBUG
 
 using namespace cv;
 using namespace std;
@@ -88,8 +88,11 @@ void analysePicture(Mat imag, double& angle) {
     }
     
     if (rightLineTuples.size() <= 0 || leftLineTuples.size() <= 0) {
+#ifdef _DEBUG
             imshow("Main Window", imag);
+
             waitKey(1);
+#endif
         return;
     }
     
