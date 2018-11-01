@@ -88,7 +88,7 @@ void analysePicture(Mat imag, double& angle) {
     }
     
     if (rightLineTuples.size() <= 0 || leftLineTuples.size() <= 0) {
-            imshow("Main Window", result);
+            imshow("Main Window", imag);
             waitKey(1);
         return;
     }

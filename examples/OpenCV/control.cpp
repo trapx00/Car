@@ -59,7 +59,7 @@ const double MAX_DISTANCE_TO_PATH = 50;
 const double MAX_TURN = 45;
 
 // PID速度预期速度。单位：cm/s
-const double EXPECTED_SPEED = 10;
+const double EXPECTED_SPEED = 7;
 const double MAX_SPEED = 30;
 
 // 速度采样延时。可以设置为0。单位：毫秒
