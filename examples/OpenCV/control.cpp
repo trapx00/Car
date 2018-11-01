@@ -105,7 +105,7 @@ void adjustAngle(double angle) {
 
     double turn = 90-absAngle;
 
-    if (turn>45) turn = 45;
+    if (turn>30) turn = 30;
 
     double result = (angle>0 ? -1:1) * turn;
 
