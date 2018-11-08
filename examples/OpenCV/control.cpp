@@ -59,8 +59,8 @@ const double MAX_DISTANCE_TO_PATH = 50;
 const double MAX_TURN = 30;
 
 // PID速度预期速度。单位：cm/s
-const double EXPECTED_SPEED = 10;
-const double MAX_SPEED = 10;
+const double EXPECTED_SPEED = 7;
+const double MAX_SPEED = 8.5;
 
 // 速度采样延时。可以设置为0。单位：毫秒
 const double SPEED_SAMPLING_DELAY_MS = 0;
@@ -112,7 +112,7 @@ void adjustAngle(double angle) {
     
 
 #ifdef PRINT
-    printf("Adjust angle to %.2lf\n", angle);
+    printf("Adjust angle to %.2lf\n", result);
     #endif
     if (angle > MAX_TURN) {
         angle = MAX_TURN;
@@ -152,7 +152,7 @@ void getSpeed(double& left, double& right) {
     left=cyclesLeft*63.4*M_PI/390;
     right=cyclesRight*63.4*M_PI/390;
     #ifdef PRINT
-    printf("Current speed: left: %.2lf, right: %.2lf\n", left, right);
+    //printf("Current speed: left: %.2lf, right: %.2lf\n", left, right);
     #endif
 }
 
@@ -167,7 +167,7 @@ void adjust(double angle) {
 #endif
     double leftSpeed = 0, rightSpeed = 0;
     getSpeed(leftSpeed, rightSpeed);
-	    adjustSpeed(EXPECTED_SPEED, leftSpeed, rightSpeed);
+	    adjustSpeed(angle == 0 ? EXPECTED_SPEED : MAX_SPEED, leftSpeed, rightSpeed);
     adjustAngle(angle);
 }
 

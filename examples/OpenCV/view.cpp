@@ -66,7 +66,7 @@ void analysePicture(Mat imag, double& angle) {
     resizeImage(imag);
     imag = imread("image.jpg", 0);
     Mat result = imag.clone();
-    Canny(result, result, 50, 250, 3);
+    Canny(result, result, 50, 250, 5);
     std::vector<Vec4i> lines;
     std::vector<Line> leftLineTuples;
     std::vector<Line> rightLineTuples;
