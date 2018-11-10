@@ -56,7 +56,7 @@ private:
 // Angles
 // 最大可能的目前地点和规划路径的距离。用来根据距离偏差算转向量。用赛道宽度就可以。单位和distacen保持一致即可，为cm。
 const double MAX_DISTANCE_TO_PATH = 50;
-const double MAX_TURN = 45;
+const double MAX_TURN = 25;
 
 // PID速度预期速度。单位：cm/s
 const double EXPECTED_SPEED = 7;
@@ -105,7 +105,7 @@ void adjustAngle(double angle) {
 
     double turn = 90-absAngle;
 
-    if (turn>30) turn = 30;
+    if (turn>MAX_TURN) turn = MAX_TURN;
 
     double result = (angle>0 ? -1:1) * turn;
 
@@ -114,11 +114,6 @@ void adjustAngle(double angle) {
 #ifdef PRINT
     printf("Adjust angle to %.2lf\n", angle);
     #endif
-    if (angle > MAX_TURN) {
-        angle = MAX_TURN;
-    } else if (angle < -MAX_TURN) {
-        angle = -MAX_TURN;
-    }
     turnTo(result);
 //     // adjust the angle
 //     double result = pidAngle.calculate(0, angle);
