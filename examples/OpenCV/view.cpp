@@ -10,7 +10,7 @@
 #define PI 3.1415926
 
 //Uncomment this line at run-time to skip GUI rendering
-//#define _DEBUG
+#define _DEBUG
 
 using namespace cv;
 using namespace std;
@@ -66,7 +66,7 @@ void analysePicture(Mat imag, double& angle) {
     resizeImage(imag);
     imag = imread("image.jpg", 0);
     Mat result = imag.clone();
-    Canny(result, result, 50, 250, 5);
+    Canny(result, result, 50, 250, 3);
     std::vector<Vec4i> lines;
     std::vector<Line> leftLineTuples;
     std::vector<Line> rightLineTuples;
@@ -102,16 +102,33 @@ void analysePicture(Mat imag, double& angle) {
     }
     
     int maxRightLengthIndex = 0;
+    int smallestRightAngleIndex=0;
+    int secondRightLengthIndex=-1;
     double maxLength = 0;
+    double smallestAngle=10;
     for (int i = 0; i < rightLineTuples.size(); i++) {
         if (maxLength < rightLineTuples[i].length) {
             maxLength = rightLineTuples[i].length;
-            maxRightLengthIndex = i;
+            secondRightLengthIndex=maxRightLengthIndex;
+	    maxRightLengthIndex = i;
         }
+	if(smallestAngle>rightLineTuples[i].k){
+	    smallestAngle=rightLineTuples[i].k;
+	    smallestRightAngleIndex=i;
+	}
+
+    }
+    if(maxRightLengthIndex!=smallestRightAngleIndex){
+	if(secondRightLengthIndex!=-1){
+	    maxRightLengthIndex=secondRightLengthIndex;
+	}
     }
     
     int maxLeftLengthIndex = 0;
+    int smallestLeftAngleIndex=0;
+    int secondLeftLengthIndex=-1;
     maxLength = 0;
+    smallestAngle=0;
     for (int i = 0; i < leftLineTuples.size(); i++) {
         if (maxLength < leftLineTuples[i].length) {
             maxLength = leftLineTuples[i].length;
