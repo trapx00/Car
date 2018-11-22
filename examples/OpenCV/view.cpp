@@ -67,7 +67,7 @@ void analysePicture(Mat imag_real, double &angle)
     //    result = imag.clone();
     //    erode(result, result, element);
     //    dilate(result, result, element);
-    // resizeImage(imag);
+    resizeImage(imag_real);
 
     int iLowH = 0;
     int iHighH = 10;
@@ -81,7 +81,6 @@ void analysePicture(Mat imag_real, double &angle)
     Mat imgHSV;
     vector<Mat> hsvSplit;
     cvtColor(imag_real, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
-
     split(imgHSV, hsvSplit);
     equalizeHist(hsvSplit[2], hsvSplit[2]);
     merge(hsvSplit, imgHSV);
@@ -96,22 +95,27 @@ void analysePicture(Mat imag_real, double &angle)
 
     vector<vector<Point>> contours;
     findContours(imgThresholded, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE); //找轮廓
-
+imshow("Red", imgThresholded);
+waitKey(1);
     vector<vector<Point>> contours1;
     Point squareCenter = Point(0, 0);
     for (int i = 0; i < contours.size(); ++i)
-    {
+    
+   {
+	   cout << contours[i].size() << endl;
         if (contours[i].size() == 4)
         {
             squareCenter.x = (contours[i][0].x + contours[i][1].x + contours[i][2].x + contours[i][3].x) / 4;
             squareCenter.y = (contours[i][0].y + contours[i][1].y + contours[i][2].y + contours[i][3].y) / 4;
-        }
+        contours1.push_back(contours[i]);
+		break;
+	}
+
+
     }
     Mat imag = imread("image.jpg", 0);
 
     #ifdef _DEBUG
-    cout<<"square"<<endl;
-    cout<<contours1<<endl;
     drawContours(imag_real, contours1, -1, Scalar(255, 0, 0), CV_FILLED);
     #endif
 
@@ -152,15 +156,31 @@ void analysePicture(Mat imag_real, double &angle)
 
     if (rightLineTuples.size() <= 0 && leftLineTuples.size() <= 0)
     {
+#ifdef _DEBUG
+	    imshow("Main Window", imag_real);
+	    waitKey(1);
+#endif
         return;
     }
     else if (rightLineTuples.size() >= 0 && leftLineTuples.size() <= 0)
     {
+#ifdef _DEBUG
+imshow("Main Window", imag_real);
+waitKey(1);
+#endif
+
+
+
         angle = 1;
         return;
     }
     else if (rightLineTuples.size() <= 0 && leftLineTuples.size() >= 0)
     {
+#ifdef _DEBUG
+	    imshow("Main Window", imag_real);
+	    waitKey(1);
+#endif
+ 
         angle = -1;
         return;
     }

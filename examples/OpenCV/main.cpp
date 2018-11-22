@@ -38,7 +38,7 @@ int main() {
         capture >> image;
         if (image.empty())
             break;
-
+	
         double angle = 0;
         analysePicture(image, angle);
         adjust(angle);
