@@ -82,7 +82,6 @@ void analysePicture(Mat imag_real, double &angle)
     vector<Mat> hsvSplit;
     cvtColor(imag_real, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
 
-    //因为我们读取的是彩色图，直方图均衡化需要在HSV空间做
     split(imgHSV, hsvSplit);
     equalizeHist(hsvSplit[2], hsvSplit[2]);
     merge(hsvSplit, imgHSV);
@@ -90,11 +89,9 @@ void analysePicture(Mat imag_real, double &angle)
 
     inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
 
-    //开操作 (去除一些噪点)
     Mat element = getStructuringElement(MORPH_RECT, Size(5, 5));
     morphologyEx(imgThresholded, imgThresholded, MORPH_OPEN, element);
 
-    //闭操作 (连接一些连通域)
     morphologyEx(imgThresholded, imgThresholded, MORPH_CLOSE, element);
 
     vector<vector<Point>> contours;
@@ -113,7 +110,9 @@ void analysePicture(Mat imag_real, double &angle)
     Mat imag = imread("image.jpg", 0);
 
     #ifdef _DEBUG
-    drawContours(imag_real, contours1, -1, Scalar(255, 0, 0), CV_FILLED); //在遮罩图层上，用白色像素填充轮廓，得到MASK
+    cout<<"square"<<endl;
+    cout<<contours1<<endl;
+    drawContours(imag_real, contours1, -1, Scalar(255, 0, 0), CV_FILLED);
     #endif
 
     Mat result = imag.clone();
