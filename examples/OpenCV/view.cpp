@@ -30,7 +30,7 @@ void drawLine(Mat &picture, Point startPoint, Point endPoint);
 
 void drawUnimportantLine(Mat &picture, Point startPoint, Point endPoint);
 
-    double calculateDistance(Point point1, Point point2);
+double calculateDistance(Point point1, Point point2);
 
 double calcAngle(double x1, double y1, double x2, double y2);
 
@@ -95,29 +95,33 @@ void analysePicture(Mat imag_real, double &angle)
 
     vector<vector<Point>> contours;
     findContours(imgThresholded, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE); //找轮廓
-imshow("Red", imgThresholded);
-waitKey(1);
+
     vector<vector<Point>> contours1;
     Point squareCenter = Point(0, 0);
+    double squareX = 0;
+    double squareY = 0;
+    double numOfPoint = 0;
     for (int i = 0; i < contours.size(); ++i)
-    
-   {
-	   cout << contours[i].size() << endl;
-        if (contours[i].size() == 4)
+    {
+        cout << contours[i].size() << endl;
+        if (contours[i].size() >= 4)
         {
-            squareCenter.x = (contours[i][0].x + contours[i][1].x + contours[i][2].x + contours[i][3].x) / 4;
-            squareCenter.y = (contours[i][0].y + contours[i][1].y + contours[i][2].y + contours[i][3].y) / 4;
-        contours1.push_back(contours[i]);
-		break;
-	}
-
-
+            for (int j = 0; j < contours[i].size(); ++j)
+            {
+                squareX += contours[i][j].x;
+                squareY += contours[i][j].y;
+                numOfPoint++;
+            }
+            contours1.push_back(contours[i]);
+        }
     }
+    squareCenter.x = squareX / numOfPoint;
+    squareCenter.y = squareY / numOfPoint;
     Mat imag = imread("image.jpg", 0);
 
-    #ifdef _DEBUG
+#ifdef _DEBUG
     drawContours(imag_real, contours1, -1, Scalar(255, 0, 0), CV_FILLED);
-    #endif
+#endif
 
     Mat result = imag.clone();
     Canny(result, result, 50, 250, 3);
@@ -157,19 +161,17 @@ waitKey(1);
     if (rightLineTuples.size() <= 0 && leftLineTuples.size() <= 0)
     {
 #ifdef _DEBUG
-	    imshow("Main Window", imag_real);
-	    waitKey(1);
+        imshow("Main Window", imag_real);
+        waitKey(1);
 #endif
         return;
     }
     else if (rightLineTuples.size() >= 0 && leftLineTuples.size() <= 0)
     {
 #ifdef _DEBUG
-imshow("Main Window", imag_real);
-waitKey(1);
+        imshow("Main Window", imag_real);
+        waitKey(1);
 #endif
-
-
 
         angle = 1;
         return;
@@ -177,10 +179,10 @@ waitKey(1);
     else if (rightLineTuples.size() <= 0 && leftLineTuples.size() >= 0)
     {
 #ifdef _DEBUG
-	    imshow("Main Window", imag_real);
-	    waitKey(1);
+        imshow("Main Window", imag_real);
+        waitKey(1);
 #endif
- 
+
         angle = -1;
         return;
     }
@@ -241,9 +243,12 @@ waitKey(1);
 
     if (contours1.size() >= 1)
     {
-        if(squareCenter.x<(result.cols/2)){
+        if (squareCenter.x < (result.cols / 2))
+        {
             leftLineTuples[maxLeftLengthIndex].b = leftLineTuples[maxLeftLengthIndex].b + squareCenter.x * 2 / leftLineTuples[maxLeftLengthIndex].k;
-        }else{
+        }
+        else
+        {
             rightLineTuples[maxRightLengthIndex].b = rightLineTuples[maxRightLengthIndex].b + (result.cols - squareCenter.x) * 2 / rightLineTuples[maxRightLengthIndex].k;
         }
     }
