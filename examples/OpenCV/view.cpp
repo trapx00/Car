@@ -110,7 +110,7 @@ void analysePicture(Mat imag_real, double &angle)
             squareCenter.y = (contours[i][0].y + contours[i][1].y + contours[i][2].y + contours[i][3].y) / 4;
         }
     }
-    imag = imread("image.jpg", 0);
+    Mat imag = imread("image.jpg", 0);
 
     #ifdef _DEBUG
     drawContours(imag_real, contours1, -1, Scalar(255, 0, 0), CV_FILLED); //在遮罩图层上，用白色像素填充轮廓，得到MASK
@@ -225,7 +225,7 @@ void analysePicture(Mat imag_real, double &angle)
         if(squareCenter.x<(result.cols/2)){
             leftLineTuples[maxLeftLengthIndex].b = leftLineTuples[maxLeftLengthIndex].b + squareCenter.x * 2 / leftLineTuples[maxLeftLengthIndex].k;
         }else{
-            rightLineTuples[maxRightLengthIndex] = rightLineTuples[maxRightLengthIndex].b + (result.cols - squareCenter.x) * 2 / rightLineTuples[maxRightLengthIndex].k;
+            rightLineTuples[maxRightLengthIndex].b = rightLineTuples[maxRightLengthIndex].b + (result.cols - squareCenter.x) * 2 / rightLineTuples[maxRightLengthIndex].k;
         }
     }
 
