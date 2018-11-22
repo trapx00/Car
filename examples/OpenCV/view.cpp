@@ -28,7 +28,7 @@ using namespace std;
 
 void drawLine(Mat &picture, Point startPoint, Point endPoint);
 
-void drawUnimportantLine(Mat &picture, Point startPoint, Point endPoint)
+void drawUnimportantLine(Mat &picture, Point startPoint, Point endPoint);
 
     double calculateDistance(Point point1, Point point2);
 
@@ -56,7 +56,7 @@ struct Line
 };
 
 // returns angle
-void analysePicture(Mat imag, double &angle)
+void analysePicture(Mat imag_real, double &angle)
 {
     //    Rect rect(0, imag.rows / 2, imag.cols, imag.rows / 2 - 72);
     //    Mat result = imag(rect);
@@ -68,7 +68,6 @@ void analysePicture(Mat imag, double &angle)
     //    erode(result, result, element);
     //    dilate(result, result, element);
     // resizeImage(imag);
-    imag = imread("image.jpg", 0);
 
     int iLowH = 0;
     int iHighH = 10;
@@ -81,7 +80,7 @@ void analysePicture(Mat imag, double &angle)
 
     Mat imgHSV;
     vector<Mat> hsvSplit;
-    cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
+    cvtColor(imag_real, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
 
     //因为我们读取的是彩色图，直方图均衡化需要在HSV空间做
     split(imgHSV, hsvSplit);
@@ -111,9 +110,11 @@ void analysePicture(Mat imag, double &angle)
             squareCenter.y = (contours[i][0].y + contours[i][1].y + contours[i][2].y + contours[i][3].y) / 4;
         }
     }
-#ifdef _DEBUG
-    drawContours(hole, contours1, -1, Scalar(255, 0, 0), CV_FILLED); //在遮罩图层上，用白色像素填充轮廓，得到MASK
-#endif
+    imag = imread("image.jpg", 0);
+
+    #ifdef _DEBUG
+    drawContours(imag_real, contours1, -1, Scalar(255, 0, 0), CV_FILLED); //在遮罩图层上，用白色像素填充轮廓，得到MASK
+    #endif
 
     Mat result = imag.clone();
     Canny(result, result, 50, 250, 3);
@@ -221,10 +222,10 @@ void analysePicture(Mat imag, double &angle)
 
     if (contours1.size() >= 1)
     {
-        if(squareCenter.x<(result.columns/2){
-            leftLineTuples[maxLeftLengthIndex].b = leftLineTuples[maxLeftLengthIndex].b + squareCenter.x * 2 / k;
+        if(squareCenter.x<(result.cols/2)){
+            leftLineTuples[maxLeftLengthIndex].b = leftLineTuples[maxLeftLengthIndex].b + squareCenter.x * 2 / leftLineTuples[maxLeftLengthIndex].k;
         }else{
-            rightLineTuples[maxRightLengthIndex] = rightLineTuples[maxRightLengthIndex].b + (result.columns - squareCenter.x) * 2 / k;
+            rightLineTuples[maxRightLengthIndex] = rightLineTuples[maxRightLengthIndex].b + (result.cols - squareCenter.x) * 2 / rightLineTuples[maxRightLengthIndex].k;
         }
     }
 
