@@ -9,7 +9,7 @@
 
 #define PI 3.1415926
 
-//Uncomment this line at run-time to skip GUI rendering
+//Uncomment this line at run-time to skip GUI renderin
 #define _DEBUG
 
 using namespace cv;
@@ -115,10 +115,15 @@ void analysePicture(Mat imag_real, double &angle)
             contours1.push_back(contours[i]);
         }
     }
-    squareCenter.x = squareX / numOfPoint;
+ 
+    if(numOfPoint<=500){
+    	contours1.clear();
+    }
+    else{squareCenter.x = squareX / numOfPoint;
     squareCenter.y = squareY / numOfPoint;
-    Mat imag = imread("image.jpg", 0);
+    }
 
+    Mat imag = imread("image.jpg", 0);
 #ifdef _DEBUG
     drawContours(imag_real, contours1, -1, Scalar(255, 0, 0), CV_FILLED);
 #endif
@@ -172,8 +177,12 @@ void analysePicture(Mat imag_real, double &angle)
         imshow("Main Window", imag_real);
         waitKey(1);
 #endif
-
-        angle = 1;
+	if(contours1.size()>0){
+		angle=-1.4;
+	}
+	else{
+		angle = 1;
+	}
         return;
     }
     else if (rightLineTuples.size() <= 0 && leftLineTuples.size() >= 0)
@@ -182,8 +191,10 @@ void analysePicture(Mat imag_real, double &angle)
         imshow("Main Window", imag_real);
         waitKey(1);
 #endif
-
-        angle = -1;
+	if(contours1.size()>0){
+		angle=1.4;
+	}
+	else{ angle = -1;}
         return;
     }
 
@@ -245,11 +256,11 @@ void analysePicture(Mat imag_real, double &angle)
     {
         if (squareCenter.x < (result.cols / 2))
         {
-            leftLineTuples[maxLeftLengthIndex].b = leftLineTuples[maxLeftLengthIndex].b + squareCenter.x * 2 / leftLineTuples[maxLeftLengthIndex].k;
+            leftLineTuples[maxLeftLengthIndex].b = leftLineTuples[maxLeftLengthIndex].b + squareCenter.x * 2 * leftLineTuples[maxLeftLengthIndex].k;
         }
         else
         {
-            rightLineTuples[maxRightLengthIndex].b = rightLineTuples[maxRightLengthIndex].b + (result.cols - squareCenter.x) * 2 / rightLineTuples[maxRightLengthIndex].k;
+            rightLineTuples[maxRightLengthIndex].b = rightLineTuples[maxRightLengthIndex].b + (result.cols - squareCenter.x) * 2 * rightLineTuples[maxRightLengthIndex].k;
         }
     }
 

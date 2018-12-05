@@ -56,11 +56,11 @@ private:
 // Angles
 // 最大可能的目前地点和规划路径的距离。用来根据距离偏差算转向量。用赛道宽度就可以。单位和distacen保持一致即可，为cm。
 const double MAX_DISTANCE_TO_PATH = 50;
-const double MAX_TURN = 20;
+const double MAX_TURN = 30;
 
 // PID速度预期速度。单位：cm/s
 const double EXPECTED_SPEED = 5;
-const double MAX_SPEED = 8;
+const double MAX_SPEED = 7;
 
 // 速度采样延时。可以设置为0。单位：毫秒
 const double SPEED_SAMPLING_DELAY_MS = 0;
