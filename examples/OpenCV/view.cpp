@@ -155,11 +155,30 @@ void analysePicture(Mat imag, double& angle) {
         }
     }
     
-    if (rightLineTuples.size() <= 0 || leftLineTuples.size() <= 0) {
+    if (rightLineTuples.size() <= 0 && leftLineTuples.size() <= 0)
+    {
 #ifdef _DEBUG
-            imshow("Main Window", imag);
-            waitKey(1);
+        imshow("Main Window", imag);
+        waitKey(1);
 #endif
+        return;
+    }
+    else if (rightLineTuples.size() >= 0 && leftLineTuples.size() <= 0)
+    {
+#ifdef _DEBUG
+        imshow("Main Window", imag);
+        waitKey(1);
+#endif
+	angle = 1;
+	return;
+    }
+    else if (rightLineTuples.size() <= 0 && leftLineTuples.size() >= 0)
+    {
+#ifdef _DEBUG
+        imshow("Main Window", imag);
+        waitKey(1);
+#endif
+	angle = -1;
         return;
     }
     
