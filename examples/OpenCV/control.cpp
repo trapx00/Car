@@ -60,7 +60,7 @@ const double MAX_TURN = 30;
 
 // PID速度预期速度。单位：cm/s
 const double EXPECTED_SPEED = 5;
-const double MAX_SPEED = 7;
+const double MAX_SPEED = 5;
 
 // 速度采样延时。可以设置为0。单位：毫秒
 const double SPEED_SAMPLING_DELAY_MS = 0;

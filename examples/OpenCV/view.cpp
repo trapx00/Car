@@ -72,10 +72,10 @@ void analysePicture(Mat imag_real, double &angle)
     int iLowH = 0;
     int iHighH = 10;
 
-    int iLowS = 43;
+    int iLowS = 43;//43
     int iHighS = 255;
 
-    int iLowV = 46;
+    int iLowV = 46;//46
     int iHighV = 255;
 
     Mat imgHSV;
@@ -116,12 +116,21 @@ void analysePicture(Mat imag_real, double &angle)
         }
     }
  
-    if(numOfPoint<=500){
+    if(numOfPoint<=1000){
     	contours1.clear();
     }
     else{squareCenter.x = squareX / numOfPoint;
     squareCenter.y = squareY / numOfPoint;
     }
+
+	if(contours1.size()>0){
+		if (squareCenter.x < (imag_real.cols / 2)){
+			angle=1.4;
+		}else{
+			angle=-1.4;
+		}
+		return;
+	}
 
     Mat imag = imread("image.jpg", 0);
 #ifdef _DEBUG
@@ -177,13 +186,8 @@ void analysePicture(Mat imag_real, double &angle)
         imshow("Main Window", imag_real);
         waitKey(1);
 #endif
-	if(contours1.size()>0){
-		angle=-1.4;
-	}
-	else{
-		angle = 1;
-	}
-        return;
+	angle = 1;
+	return;
     }
     else if (rightLineTuples.size() <= 0 && leftLineTuples.size() >= 0)
     {
@@ -191,10 +195,7 @@ void analysePicture(Mat imag_real, double &angle)
         imshow("Main Window", imag_real);
         waitKey(1);
 #endif
-	if(contours1.size()>0){
-		angle=1.4;
-	}
-	else{ angle = -1;}
+	angle = -1;
         return;
     }
 
@@ -252,17 +253,17 @@ void analysePicture(Mat imag_real, double &angle)
         }
     }
 
-    if (contours1.size() >= 1)
-    {
-        if (squareCenter.x < (result.cols / 2))
-        {
-            leftLineTuples[maxLeftLengthIndex].b = leftLineTuples[maxLeftLengthIndex].b + squareCenter.x * 2 * leftLineTuples[maxLeftLengthIndex].k;
-        }
-        else
-        {
-            rightLineTuples[maxRightLengthIndex].b = rightLineTuples[maxRightLengthIndex].b + (result.cols - squareCenter.x) * 2 * rightLineTuples[maxRightLengthIndex].k;
-        }
-    }
+    //if (contours1.size() >= 1)
+    //{
+        //if (squareCenter.x < (result.cols / 2))
+        //{
+          //  leftLineTuples[maxLeftLengthIndex].b = leftLineTuples[maxLeftLengthIndex].b + squareCenter.x * 2 * leftLineTuples[maxLeftLengthIndex].k;
+        //}
+        //else
+        //{
+         //   rightLineTuples[maxRightLengthIndex].b = rightLineTuples[maxRightLengthIndex].b + (result.cols - squareCenter.x) * 2 * rightLineTuples[maxRightLengthIndex].k;
+        //}
+    //}
 
     Line rightMaxLengthLine = rightLineTuples[maxRightLengthIndex];
     Line leftMaxLengthLine = leftLineTuples[maxLeftLengthIndex];
@@ -273,6 +274,14 @@ void analysePicture(Mat imag_real, double &angle)
 
     // returns values
     angle = deltaAngle;
+
+	if(contours1.size()>0){
+		if (squareCenter.x < (result.cols / 2)){
+			angle=1.4;
+		}else{
+			angle=-1.4;
+		}
+	}
 
 #ifdef _DEBUG
     //画线
