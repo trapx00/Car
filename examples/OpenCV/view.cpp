@@ -63,6 +63,74 @@ void analysePicture(Mat imag, double& angle) {
     //    erode(result, result, element);
     //    dilate(result, result, element);
     resizeImage(imag);
+    int iLowH = 0;
+    int iHighH = 10;
+
+    int iLowS = 43;//43
+    int iHighS = 255;
+
+    int iLowV = 46;//46
+    int iHighV = 255;
+
+    Mat imgHSV;
+    vector<Mat> hsvSplit;
+    cvtColor(imag, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
+    split(imgHSV, hsvSplit);
+    equalizeHist(hsvSplit[2], hsvSplit[2]);
+    merge(hsvSplit, imgHSV);
+    Mat imgThresholded;
+
+    inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
+
+    Mat element = getStructuringElement(MORPH_RECT, Size(5, 5));
+    morphologyEx(imgThresholded, imgThresholded, MORPH_OPEN, element);
+
+    morphologyEx(imgThresholded, imgThresholded, MORPH_CLOSE, element);
+
+    vector<vector<Point>> contours;
+    findContours(imgThresholded, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE); //找轮廓
+
+    vector<vector<Point>> contours1;
+    Point squareCenter = Point(0, 0);
+    double squareX = 0;
+    double squareY = 0;
+    double numOfPoint = 0;
+    for (int i = 0; i < contours.size(); ++i)
+    {
+        cout << contours[i].size() << endl;
+        if (contours[i].size() >= 4)
+        {
+            for (int j = 0; j < contours[i].size(); ++j)
+            {
+                squareX += contours[i][j].x;
+                squareY += contours[i][j].y;
+                numOfPoint++;
+            }
+            contours1.push_back(contours[i]);
+        }
+    }
+ 
+    if(numOfPoint<=1000){
+    	contours1.clear();
+    }
+    else{squareCenter.x = squareX / numOfPoint;
+        squareCenter.y = squareY / numOfPoint;
+    }
+
+	if(contours1.size()>0){
+		if (squareCenter.x < (imag_real.cols / 2)){
+			angle=1.4;
+		}else{
+			angle=-1.4;
+		}
+        #ifdef _DEBUG
+        drawContours(imag_real, contours1, -1, Scalar(255, 0, 0), CV_FILLED);
+        imshow("Main Window", imag);
+        waitKey(1);
+        #endif
+		return;
+	}
+
     imag = imread("image.jpg", 0);
     Mat result = imag.clone();
     Canny(result, result, 100, 150, 3);
@@ -90,7 +158,6 @@ void analysePicture(Mat imag, double& angle) {
     if (rightLineTuples.size() <= 0 || leftLineTuples.size() <= 0) {
 #ifdef _DEBUG
             imshow("Main Window", imag);
-
             waitKey(1);
 #endif
         return;
