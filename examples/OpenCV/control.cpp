@@ -57,10 +57,10 @@ private:
 // 最大可能的目前地点和规划路径的距离。用来根据距离偏差算转向量。用赛道宽度就可以。单位和distacen保持一致即可，为cm。
 const double MAX_DISTANCE_TO_PATH = 50;
 const double MAX_TURN = 25;
-
+const double TURN_WHEN_RED = 15;
 // PID速度预期速度。单位：cm/s
-const double EXPECTED_SPEED = 7;
-const double MAX_SPEED = 30;
+const double EXPECTED_SPEED = 5;
+const double MAX_SPEED = 5;
 
 // 速度采样延时。可以设置为0。单位：毫秒
 const double SPEED_SAMPLING_DELAY_MS = 0;
@@ -94,7 +94,14 @@ void adjustSpeed(double expectedSpeed, double leftSpeed, double rightSpeed) {
 }
 
 void adjustAngle(double angle) {
+	if (angle == 2) {
 
+		turnTo(TURN_WHEN_RED);
+		return;
+	}else if (angle == -2) {
+		turnTo(-TURN_WHEN_RED);
+		return;
+	}
     if (angle == 0) {
         return;
     }
@@ -104,7 +111,7 @@ void adjustAngle(double angle) {
     double absAngle = abs(angle);
 
     double turn = 90-absAngle;
-
+turn/=2;
     if (turn>MAX_TURN) turn = MAX_TURN;
 
     double result = (angle>0 ? -1:1) * turn;

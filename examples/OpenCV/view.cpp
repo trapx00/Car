@@ -118,13 +118,13 @@ void analysePicture(Mat imag, double& angle) {
     }
 
 	if(contours1.size()>0){
-		if (squareCenter.x < (imag_real.cols / 2)){
-			angle=1.4;
+		if (squareCenter.x < (imag.cols / 2)){
+			angle=2;
 		}else{
-			angle=-1.4;
+			angle=-2;
 		}
         #ifdef _DEBUG
-        drawContours(imag_real, contours1, -1, Scalar(255, 0, 0), CV_FILLED);
+        drawContours(imag, contours1, -1, Scalar(255, 0, 0), CV_FILLED);
         imshow("Main Window", imag);
         waitKey(1);
         #endif
