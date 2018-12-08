@@ -53,16 +53,9 @@ public:
 
 // returns angle
 void analysePicture(Mat imag, double& angle) {
-    //    Rect rect(0, imag.rows / 2, imag.cols, imag.rows / 2 - 72);
-    //    Mat result = imag(rect);
-    //    Mat element = getStructuringElement(MORPH_RECT, Size(2 * erosion_size + 1, 2 * erosion_size + 1),
-    //                                        Point(erosion_size, erosion_size));
-    //
-    //    //腐蚀操作
-    //    result = imag.clone();
-    //    erode(result, result, element);
-    //    dilate(result, result, element);
+    //裁剪图像以加快处理
     resizeImage(imag);
+    //红色的HSV阈值
     int iLowH = 0;
     int iHighH = 10;
 
@@ -72,23 +65,22 @@ void analysePicture(Mat imag, double& angle) {
     int iLowV = 46;//46
     int iHighV = 255;
 
+    //BGR转HSV并识别红色
     Mat imgHSV;
     vector<Mat> hsvSplit;
-    cvtColor(imag, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
+    cvtColor(imag, imgHSV, COLOR_BGR2HSV);
     split(imgHSV, hsvSplit);
     equalizeHist(hsvSplit[2], hsvSplit[2]);
     merge(hsvSplit, imgHSV);
     Mat imgThresholded;
 
-    inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
-
+    inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), imgThresholded);
+    vector<vector<Point>> contours;
+    findContours(imgThresholded, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE); //找轮廓
     Mat element = getStructuringElement(MORPH_RECT, Size(5, 5));
     morphologyEx(imgThresholded, imgThresholded, MORPH_OPEN, element);
 
     morphologyEx(imgThresholded, imgThresholded, MORPH_CLOSE, element);
-
-    vector<vector<Point>> contours;
-    findContours(imgThresholded, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE); //找轮廓
 
     vector<vector<Point>> contours1;
     Point squareCenter = Point(0, 0);
@@ -110,6 +102,7 @@ void analysePicture(Mat imag, double& angle) {
         }
     }
  
+    //红色大小阈值
     if(numOfPoint<=1000){
     	contours1.clear();
     }
@@ -131,8 +124,10 @@ void analysePicture(Mat imag, double& angle) {
 		return;
 	}
 
+    //开始识别轮廓，即车道
     imag = imread("image.jpg", 0);
     Mat result = imag.clone();
+
     Canny(result, result, 100, 150, 3);
     std::vector<Vec4i> lines;
     std::vector<Line> leftLineTuples;
@@ -155,6 +150,7 @@ void analysePicture(Mat imag, double& angle) {
         }
     }
     
+    //只看见左边或右边的线则判断为过偏
     if (rightLineTuples.size() <= 0 && leftLineTuples.size() <= 0)
     {
 #ifdef _DEBUG
